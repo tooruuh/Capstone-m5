@@ -6,6 +6,10 @@
 
 source venv/bin/activate
 
+# windowns: 
+
+venv/Scripts/activate
+
 ```
 
 ### Instale as dependências 
