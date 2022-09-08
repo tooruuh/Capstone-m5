@@ -22,12 +22,28 @@ class UserRegisterViewTest(APITestCase):
             "plan": "Base"
         }
 
+        cls.admin_data = {
+            "username": "g12",
+            "email": "1234@gmail.com",
+            "password": "123",
+            "wallet": 10.1,
+            "plan": "Base"
+        }
+
         cls.user_error = {}
     
     def test_create_user(self):
         response = self.client.post(self.base_url,self.user)
 
         expected_status_code = status.HTTP_201_CREATED
+        result_status_code = response.status_code
+        
+        self.assertEqual(expected_status_code, result_status_code)
+    
+    def test_error_user_comum(self):
+        response = self.client.get(self.base_url)
+
+        expected_status_code = status.HTTP_401_UNAUTHORIZED
         result_status_code = response.status_code
         
         self.assertEqual(expected_status_code, result_status_code)
@@ -40,7 +56,7 @@ class UserRegisterViewTest(APITestCase):
         
         self.assertEqual(expected_status_code, result_status_code)
     
-    def test_error_double_user(self):
+    def test_error_duplicate_user(self):
         self.client.post(self.base_url,self.user)
         response = self.client.post(self.base_url,self.user)
 
