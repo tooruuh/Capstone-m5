@@ -23,3 +23,6 @@ class Product(models.Model):
     is_selled   = models.BooleanField(default=False)
     
     seller = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name="products" )
+    
+    
+    
