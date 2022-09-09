@@ -7,13 +7,6 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 
 class AbstractUserCustom(AbstractBaseUser, PermissionsMixin):
-    """
-    An abstract base class implementing a fully featured User model with
-    admin-compliant permissions.
-
-    Username and password are required. Other fields are optional.
-    """
-
     username = models.CharField(
         ("username"),
         max_length=150,
@@ -22,8 +15,6 @@ class AbstractUserCustom(AbstractBaseUser, PermissionsMixin):
             "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
         ),
     )
-    first_name = models.CharField(("first name"), max_length=150, blank=True)
-    last_name = models.CharField(("last name"), max_length=150, blank=True)
     email = models.EmailField(("email address"), blank=True)
     is_staff = models.BooleanField(
         ("staff status"),
