@@ -7,9 +7,14 @@ from users.serializers import UserSerializer
 from .models import Cart
 
 
-class CartSerializer(serializers.Serializer):
-    total_price = serializers.SerializerMethodField(read_only=True)
-    total_itens = serializers.SerializerMethodField(read_only=True)
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = "__all__"
+        # read_only_fields = ["total_price", "total_itens"]
+
+    total_price = serializers.SerializerMethodField(method_name="get_total_price")
+    total_itens = serializers.SerializerMethodField(method_name="get_total_itens")
 
     user = UserSerializer(read_only=True)
     # products = ProductSerializer()
