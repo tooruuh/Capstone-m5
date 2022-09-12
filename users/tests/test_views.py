@@ -63,14 +63,13 @@ class UserRegisterViewTest(APITestCase):
         
         self.assertEqual(expected_status_code, result_status_code)
 
-class UserRegisterViewTest(APITestCase):
+class UserUpdateViewTest(APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
-        cls.base_url = reverse("user-update")
-        
         cls.user_login = {"email": "1234@gmail.com","password": "123"}
         cls.user_data = {
             "name": "g12",
+            "username": "test",
             "email": "1234@gmail.com",
             "password": "123",
             "plan": "Base"
@@ -79,9 +78,41 @@ class UserRegisterViewTest(APITestCase):
         cls.admin_data = {
             "name": "g12",
             "email": "1234@gmail.com",
+            "username": "test1",
             "password": "123",
             "plan": "Base"
         }
+        
+        cls.user = User.objects.create_user(**cls.user_data)
+        cls.token_user = Token.objects.create(user=cls.user)
 
-        cls.user = User.objects.get_or_create(**cls.user_data)
-        cls.token_user = Token.objects.create(**cls.user)
+        cls.base_url = reverse("user-update", kwargs={'user_id': cls.user.id})
+        cls.login_url = reverse("login-auth-token")
+
+    def test_login_user(self):
+        response = self.client.post(self.login_url, self.user_login)
+
+        expected_status_code = status.HTTP_200_OK
+        result_status_code = response.status_code
+
+        self.assertIn("token", response.data)
+        self.assertEqual(expected_status_code, result_status_code)
+
+    def test_updated_user(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token_user.key)
+        response = self.client.patch(self.base_url, data={"name": "wellington"})
+
+        expected_status_code = status.HTTP_200_OK
+        result_status_code = response.status_code
+
+        self.assertEqual(response.data["name"],"wellington")
+        self.assertEqual(expected_status_code, result_status_code)
+    
+    def test_deleted_user(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token_user.key)
+        response = self.client.delete(self.base_url)
+
+        expected_status_code = status.HTTP_204_NO_CONTENT
+        result_status_code = response.status_code
+
+        self.assertEqual(expected_status_code, result_status_code)
