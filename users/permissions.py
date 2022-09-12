@@ -11,3 +11,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
             return True
         if request.user.is_superuser:
             return True
+
+class IsUserIsExact(permissions.BasePermission):
+    def has_object_permission(self, request: Request, view: View, user: User) -> bool:
+        return request.user.id == user.id or request.user.is_superuser
