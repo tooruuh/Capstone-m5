@@ -9,7 +9,6 @@ class IsSellerOrReadOnly(permissions.BasePermission):
             return True
         if request.user.is_superuser:
             return True
-        return request.user.is_seller
     
 class IsSellerIsExact(permissions.BasePermission):
     def has_object_permission(self, request: Request, view: View, product: Product) -> bool:
