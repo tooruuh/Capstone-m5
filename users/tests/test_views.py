@@ -13,20 +13,18 @@ class UserRegisterViewTest(APITestCase):
     def setUpTestData(cls) -> None:
         cls.base_url = reverse("user-create")
         
-        cls.user_login = {"username": "g12","password": "123"}
+        cls.user_login = {"email": "1234@gmail.com","password": "123"}
         cls.user = {
-            "username": "g12",
+            "name": "g12",
             "email": "1234@gmail.com",
             "password": "123",
-            "wallet": 10.1,
             "plan": "Base"
         }
 
         cls.admin_data = {
-            "username": "g12",
+            "name": "g12",
             "email": "1234@gmail.com",
             "password": "123",
-            "wallet": 10.1,
             "plan": "Base"
         }
 
@@ -64,3 +62,26 @@ class UserRegisterViewTest(APITestCase):
         result_status_code = response.status_code
         
         self.assertEqual(expected_status_code, result_status_code)
+
+class UserRegisterViewTest(APITestCase):
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.base_url = reverse("user-update")
+        
+        cls.user_login = {"email": "1234@gmail.com","password": "123"}
+        cls.user_data = {
+            "name": "g12",
+            "email": "1234@gmail.com",
+            "password": "123",
+            "plan": "Base"
+        }
+
+        cls.admin_data = {
+            "name": "g12",
+            "email": "1234@gmail.com",
+            "password": "123",
+            "plan": "Base"
+        }
+
+        cls.user = User.objects.get_or_create(**cls.user_data)
+        cls.token_user = Token.objects.create(**cls.user)
