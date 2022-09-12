@@ -9,7 +9,13 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+import os
+import dotenv
+import dj_database_url
 
+dotenv.load_dotenv()
+
+from pathlib import Path
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-nw+*yv@-ubz#+myjzf5a692-o#_eo7hq^8(x6wa&kuxf(urgof"
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -86,13 +92,24 @@ WSGI_APPLICATION = "BonMarche.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+  "default": {
+      "ENGINE": "django.db.backends.postgresql",
+      "NAME": os.getenv("POSTGRES_DB"),
+      "USER": os.getenv("POSTGRES_USER"),
+      "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+      "HOST": "127.0.0.1",
+      "PORT": 5432,
+  },
+    "replica": {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("POSTGRES_DB"),
+        'HOST': "127.0.0.1",
+        'TEST': {
+            'MIRROR': 'default',
+     }
+   }
+  }
 
 
 # Password validation
@@ -137,3 +154,13 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    db_from_env = dj_database_url.config(
+        default=DATABASE_URL, conn_max_age=500, ssl_require=True)
+    DATABASES['default'].update(db_from_env)
+    DEBUG = False
+    
+ALLOWED_HOSTS = ['bonmarche.herokuapp.com', 'localhost']

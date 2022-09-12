@@ -1,0 +1,1 @@
+web: gunicorn BonMarche.wsgi --log-level debug
