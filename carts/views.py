@@ -1,38 +1,43 @@
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import (
-    IsAdminUser,
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
 )
 
 from carts.models import Cart
 
-from .permission import IsCartOwner
-from .serializers import CartSerializer
-
+from .permission import IsSuperUser, IsUserIsExact
+from .serializers import CartSerializer, CartDetailSerializer
 
 class CartView(generics.ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated,IsSuperUser]
 
     queryset = Cart.objects.all()
-    serializer_class = CartSerializer
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return self.queryset.all()
-
-        return self.queryset.filter(user=self.request.user)
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return CartSerializer
+        return CartDetailSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user,is_finalized=False)
 
-
-class CartDetailView(generics.RetrieveDestroyAPIView):
+class CartBuyView(generics.UpdateAPIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsUserIsExact]
 
-    serializer_class = CartSerializer
+    serializer_class = CartDetailSerializer
     queryset = Cart.objects.all()
-    lookup_url_kwarg = "product_id"
+
+    lookup_url_kwarg = "user_id"
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    def get_queryset(self):
+        return self.queryset.filter(user=self.kwargs.get("user_id"),is_finalized=False)

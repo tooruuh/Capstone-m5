@@ -1,30 +1,45 @@
-from products.models import Product
 
 # from products.serializers import ProductSerializer
+from asyncore import read
 from rest_framework import serializers
+from products.serializer import ProductSerializer
 from users.serializers import UserSerializer
 
 from .models import Cart
+from .exceptions import ValidationDuplicatedProduct, ValidationIsSelled
+from products.models import Product
+from users.models import User
 
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = "__all__"
-        # read_only_fields = ["total_price", "total_itens"]
+        read_only_fields = ["user"]
 
-    total_price = serializers.SerializerMethodField(method_name="get_total_price")
-    total_itens = serializers.SerializerMethodField(method_name="get_total_itens")
+    def create(self, validated_data):
+        carts = Cart.objects.filter(user=validated_data["user"])
 
-    user = UserSerializer(read_only=True)
-    # products = ProductSerializer()
+        for cart in carts:
+            if cart.product == validated_data["product"]:
+                raise ValidationDuplicatedProduct("this product is already added to your cart")
+            if cart.product.is_active == False:
+                raise ValidationIsSelled("Product is sold")
+        cart = Cart.objects.create(**validated_data)
+        
+        return cart
 
-    def get_total_price(self, obj: Product):
-        total_price = 0
-        for item in obj:
-            total_price += item.price
+class CartDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = "__all__"
+        read_only_fields = ["user"]
+    product = ProductSerializer(read_only=True)
+    
+    def update(self, instance, validated_data: dict):
+        print(instance)
+        import ipdb
 
-        return total_price
-
-    def get_total_itens(self, obj: Product):
-        return len(Product)
+        ipdb.set_trace()
+        # for product in products:
+        #     product.is_finalized
