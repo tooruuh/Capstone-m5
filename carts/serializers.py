@@ -23,7 +23,7 @@ class CartSerializer(serializers.ModelSerializer):
         for cart in carts:
             if cart.product == validated_data["product"]:
                 raise ValidationDuplicatedProduct("this product is already added to your cart")
-            if cart.product.is_active == False:
+            if validated_data["product"].is_active == False:
                 raise ValidationIsSelled("Product is sold")
         cart = Cart.objects.create(**validated_data)
         
