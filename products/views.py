@@ -1,7 +1,9 @@
-from select import select
+from django.forms.models import model_to_dict
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView, Response, status
+from select import select
 
 from .custom_permissions import IsSellerIsExact, IsSellerOrReadOnly
 
@@ -29,3 +31,14 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
     
     lookup_url_kwarg = "product_id"
+    
+
+class ProductSearchView(APIView):
+    def get(self, request):
+        name_param = request.query_params.get("name")
+        
+        products = Product.objects.filter(name__contains=name_param)
+        
+        products_dict =  [model_to_dict(product) for product in products]
+        
+        return Response(products_dict, status.HTTP_200_OK)
