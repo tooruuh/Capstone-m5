@@ -4,8 +4,10 @@ from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
 )
+from django.shortcuts import get_object_or_404
 
 from carts.models import Cart
+from users.models import User
 
 from .permission import IsSuperUser, IsUserIsExact
 from .serializers import CartSerializer, CartDetailSerializer
@@ -29,15 +31,15 @@ class CartView(generics.ListCreateAPIView):
 
 class CartBuyView(generics.UpdateAPIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, IsUserIsExact]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     serializer_class = CartDetailSerializer
     queryset = Cart.objects.all()
 
-    lookup_url_kwarg = "user_id"
+    lookup_url_kwarg = "cart_id"
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
     
     def get_queryset(self):
-        return self.queryset.filter(user=self.kwargs.get("user_id"),is_finalized=False)
+        return self.queryset.filter(user=self.request.user.id,is_finalized=False)

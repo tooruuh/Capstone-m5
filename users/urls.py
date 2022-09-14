@@ -7,3 +7,4 @@ urlpatterns = [
     path("users/", views.UserView.as_view(), name="user-create"),
     path("users/<str:user_id>/", views.UpdateView.as_view(), name="user-update"),
 ]
+
