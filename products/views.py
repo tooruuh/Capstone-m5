@@ -36,9 +36,11 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ProductSearchView(APIView):
     def get(self, request):
         name_param = request.query_params.get("name")
+        category_param = request.query_params.get("category")
         
-        products = Product.objects.filter(name__contains=name_param)
+        products = Product.objects.filter(name__contains=name_param, category__contains=category_param)
         
         products_dict =  [model_to_dict(product) for product in products]
         
         return Response(products_dict, status.HTTP_200_OK)
+    
