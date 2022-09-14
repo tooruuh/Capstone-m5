@@ -32,7 +32,6 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     
     lookup_url_kwarg = "product_id"
     
-
 class ProductSearchView(APIView):
     def get(self, request):
         name_param = request.query_params.get("name")
