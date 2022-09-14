@@ -43,4 +43,3 @@ class ProductSearchView(APIView):
         products_dict =  [model_to_dict(product) for product in products]
         
         return Response(products_dict, status.HTTP_200_OK)
-    

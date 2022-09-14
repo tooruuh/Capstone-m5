@@ -3,7 +3,6 @@
 from asyncore import read
 from rest_framework import serializers
 from products.serializer import ProductSerializer
-from users.serializers import UserSerializer
 
 from .models import Cart
 from .exceptions import ValidationDuplicatedProduct, ValidationIsSelled
@@ -37,9 +36,15 @@ class CartDetailSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     
     def update(self, instance, validated_data: dict):
-        print(instance)
-        import ipdb
-
-        ipdb.set_trace()
-        # for product in products:
-        #     product.is_finalized
+        instance.product.is_active = False
+        instance.is_finalized = True
+        if instance.user.plan == "Base":
+            instance.user.wallet = instance.user.wallet + instance.product.price * 2 / 100
+        if instance.user.plan == "Professionnelle":
+            instance.user.wallet = instance.user.wallet + instance.product.price * 4 / 100
+        if instance.user.plan == "Prime":
+            instance.user.wallet = instance.user.wallet + instance.product.price * 9 / 100
+        instance.save()
+        instance.product.save()
+        instance.user.save()
+        return instance

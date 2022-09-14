@@ -1,5 +1,8 @@
-import email
 from rest_framework import serializers
+
+from carts.models import Cart
+from django.shortcuts import get_object_or_404
+# from carts.serializers import CartDetailSerializer
 
 from .models import User
 
@@ -16,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         validated_data["username"] = validated_data["email"]
         user = User.objects.create_user(**validated_data)
         return user
-
+        
 class LoginSerializer(serializers.Serializer):
     email = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)

@@ -1,4 +1,3 @@
-from urllib import response
 import ipdb
 
 from django.urls import reverse
