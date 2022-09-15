@@ -1,30 +1,50 @@
-from products.models import Product
 
 # from products.serializers import ProductSerializer
+from asyncore import read
 from rest_framework import serializers
-from users.serializers import UserSerializer
+from products.serializer import ProductSerializer
 
 from .models import Cart
+from .exceptions import ValidationDuplicatedProduct, ValidationIsSelled
+from products.models import Product
+from users.models import User
 
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = "__all__"
-        # read_only_fields = ["total_price", "total_itens"]
+        read_only_fields = ["user"]
 
-    total_price = serializers.SerializerMethodField(method_name="get_total_price")
-    total_itens = serializers.SerializerMethodField(method_name="get_total_itens")
+    def create(self, validated_data):
+        carts = Cart.objects.filter(user=validated_data["user"])
 
-    user = UserSerializer(read_only=True)
-    # products = ProductSerializer()
+        for cart in carts:
+            if cart.product == validated_data["product"]:
+                raise ValidationDuplicatedProduct("this product is already added to your cart")
+            if validated_data["product"].is_active == False:
+                raise ValidationIsSelled("Product is sold")
+        cart = Cart.objects.create(**validated_data)
+        
+        return cart
 
-    def get_total_price(self, obj: Product):
-        total_price = 0
-        for item in obj:
-            total_price += item.price
-
-        return total_price
-
-    def get_total_itens(self, obj: Product):
-        return len(Product)
+class CartDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = "__all__"
+        read_only_fields = ["user"]
+    product = ProductSerializer(read_only=True)
+    
+    def update(self, instance, validated_data: dict):
+        instance.product.is_active = False
+        instance.is_finalized = True
+        if instance.user.plan == "Base":
+            instance.user.wallet = instance.user.wallet + instance.product.price * 2 / 100
+        if instance.user.plan == "Professionnelle":
+            instance.user.wallet = instance.user.wallet + instance.product.price * 4 / 100
+        if instance.user.plan == "Prime":
+            instance.user.wallet = instance.user.wallet + instance.product.price * 9 / 100
+        instance.save()
+        instance.product.save()
+        instance.user.save()
+        return instance

@@ -7,7 +7,7 @@ from rest_framework.views import APIView, Request, Response, status
 
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsUserIsExact
 
 class UserView(generics.ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
@@ -35,3 +35,13 @@ class LoginView(APIView):
         token, _ = Token.objects.get_or_create(user=user)
 
         return Response({"token": token.key})
+
+class UpdateView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsUserIsExact]
+    
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    lookup_url_kwarg = "user_id"
+
