@@ -1,12 +1,12 @@
 from rest_framework import permissions
 from rest_framework.views import Request, View
 
-from .models import User
+from users.models import User
 
 SAFE_METHODS = ('POST', 'HEAD', 'OPTIONS')
 
-class IsAdminOrReadOnly(permissions.BasePermission):
-    def has_permission(self, request: Request, view: View) -> bool:
+class IsSuperUser(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
         if request.user.is_superuser:
@@ -14,4 +14,5 @@ class IsAdminOrReadOnly(permissions.BasePermission):
 
 class IsUserIsExact(permissions.BasePermission):
     def has_object_permission(self, request: Request, view: View, user: User) -> bool:
-        return request.user.id == user.id or request.user.is_superuser
+        return request.user.id == user.id
+
