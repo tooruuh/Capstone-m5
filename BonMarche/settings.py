@@ -49,7 +49,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
-    "django_filter",
+    "django_filters",
 ]
 
 MY_APPS = [
