@@ -45,3 +45,4 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
 
     lookup_url_kwarg = "product_id"
+
