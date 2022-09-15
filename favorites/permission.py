@@ -1,7 +1,6 @@
 from rest_framework import permissions
 from rest_framework.views import Request, View
 
-from users.models import User
 from .models import Favorite
 
 class IsUserIsExact(permissions.BasePermission):

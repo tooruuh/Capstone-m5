@@ -1,9 +1,8 @@
 from rest_framework import serializers
 from products.serializer import ProductSerializer
-from users.serializers import UserSerializer
 
 from .models import Favorite
-from carts.exceptions import ValidationDuplicatedProduct, ValidationIsSelled
+from carts.exceptions import ValidationDuplicatedProduct
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

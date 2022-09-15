@@ -1,13 +1,10 @@
 
 # from products.serializers import ProductSerializer
-from asyncore import read
 from rest_framework import serializers
 from products.serializer import ProductSerializer
 
 from .models import Cart
 from .exceptions import ValidationDuplicatedProduct, ValidationIsSelled
-from products.models import Product
-from users.models import User
 
 
 class CartSerializer(serializers.ModelSerializer):

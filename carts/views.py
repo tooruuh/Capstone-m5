@@ -7,9 +7,8 @@ from rest_framework.permissions import (
 from django.shortcuts import get_object_or_404
 
 from carts.models import Cart
-from users.models import User
 
-from .permission import IsSuperUser, IsUserIsExact
+from .permission import IsSuperUser
 from .serializers import CartSerializer, CartDetailSerializer
 
 class CartView(generics.ListCreateAPIView):

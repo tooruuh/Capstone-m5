@@ -1,13 +1,10 @@
-from select import select
 
-from django.forms.models import model_to_dict
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.views import APIView, Response, status
 
-from .custom_permissions import IsSellerIsExact, IsSellerOrReadOnly
+from .custom_permissions import IsSellerIsExact
 from .models import Product
 from .serializer import ProductSerializer
 
