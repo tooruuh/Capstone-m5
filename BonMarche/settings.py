@@ -43,6 +43,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
+    "django_filters",
 ]
 
 MY_APPS = [
@@ -65,6 +66,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "BonMarche.urls"
+
+REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+}
 
 TEMPLATES = [
     {
