@@ -1,9 +1,5 @@
 from rest_framework import serializers
 
-from carts.models import Cart
-from django.shortcuts import get_object_or_404
-# from carts.serializers import CartDetailSerializer
-
 from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
